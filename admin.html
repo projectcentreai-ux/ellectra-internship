@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel – ELLECTRA Internship</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#FFD700;--amber:#FFA500;--red:#E63946;--red-dark:#B00020;
+  --green:#22C55E;--green-dark:#166534;--blue:#3B82F6;
+  --black:#050505;--dark:#0A0A0A;--dark2:#111111;--dark3:#1A1A1A;--dark4:#222;
+  --glass:rgba(255,215,0,0.06);--glass-border:rgba(255,215,0,0.18);
+  --text:#F0F0F0;--text-dim:#999;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--text);overflow-x:hidden;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--black)}::-webkit-scrollbar-thumb{background:var(--gold)}
+
+/* ── LOGIN SCREEN ──────────────────────────────────────────────────────────── */
+#login-screen{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.08) 0%, var(--black) 70%);
+  padding:1.5rem;
+}
+.login-box{
+  width:100%;max-width:420px;
+  background:var(--dark2);border:1px solid var(--glass-border);
+  padding:2.5rem 2rem;
+  clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));
+  position:relative;animation:fade-in 0.5s ease;
+}
+@keyframes fade-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--red),transparent)}
+.login-logo{text-align:center;margin-bottom:1.8rem}
+.login-logo .brand{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--gold);letter-spacing:4px}
+.login-logo .sub{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--red);letter-spacing:3px;margin-top:0.3rem}
+.login-label{font-size:0.72rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:0.4rem;display:block}
+.login-input{
+  width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,215,0,0.15);
+  color:var(--text);padding:0.75rem 1rem;
+  font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;
+  transition:border-color 0.2s;margin-bottom:1.1rem;
+  clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+}
+.login-input:focus{border-color:var(--gold)}
+.login-input::placeholder{color:rgba(255,255,255,0.2)}
+.login-btn{
+  width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));
+  color:var(--black);border:none;padding:0.9rem;
+  font-family:'Orbitron',monospace;font-size:0.8rem;font-weight:700;
+  letter-spacing:2px;cursor:pointer;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+  transition:all 0.3s;
+}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,215,0,0.35)}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed}
+.login-err{color:var(--red);font-size:0.82rem;margin-top:0.6rem;text-align:center;display:none}
+
+/* ── MAIN LAYOUT ────────────────────────────────────────────────────────────── */
+#admin-shell{display:none;min-height:100vh;flex-direction:column}
+
+/* ── TOP NAV ─────────────────────────────────────────────────────────────────── */
+.admin-nav{
+  position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.75rem 1.5rem;
+  background:rgba(5,5,5,0.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--glass-border);
+}
+.nav-left{display:flex;align-items:center;gap:0.8rem}
+.nav-brand{font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:700;color:var(--gold);letter-spacing:2px}
+.admin-badge{
+  background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.4);
+  color:var(--red);font-family:'Share Tech Mono',monospace;
+  font-size:0.62rem;letter-spacing:2px;padding:0.2rem 0.6rem;text-transform:uppercase;
+}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.admin-user{font-size:0.8rem;color:var(--text-dim)}
+.logout-btn{
+  background:transparent;border:1px solid rgba(230,57,70,0.4);
+  color:var(--red);padding:0.35rem 0.9rem;cursor:pointer;
+  font-family:'Rajdhani',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:1px;
+  transition:all 0.2s;
+  clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+}
+.logout-btn:hover{background:rgba(230,57,70,0.1)}
+
+/* ── STATS BAR ─────────────────────────────────────────────────────────────── */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1rem;padding:1.5rem 1.5rem 0;
+}
+.stat-card{
+  background:var(--dark2);border:1px solid rgba(255,215,0,0.1);
+  padding:1.2rem 1.5rem;position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);
+  transition:all 0.3s;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.all::before{background:linear-gradient(90deg,var(--gold),var(--amber))}
+.stat-card.pending::before{background:linear-gradient(90deg,var(--amber),var(--red))}
+.stat-card.verified::before{background:linear-gradient(90deg,var(--green),#15803D)}
+.stat-card.rejected::before{background:linear-gradient(90deg,var(--red),var(--red-dark))}
+.stat-card:hover{transform:translateY(-3px);border-color:rgba(255,215,0,0.25)}
+.stat-num{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:var(--gold)}
+.stat-card.pending .stat-num{color:var(--amber)}
+.stat-card.verified .stat-num{color:var(--green)}
+.stat-card.rejected .stat-num{color:var(--red)}
+.stat-label{font-size:0.72rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-top:0.2rem}
+
+/* ── TOOLBAR ──────────────────────────────────────────────────────────────── */
+.toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:1rem;
+  padding:1.2rem 1.5rem;
+}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:340px}
+.search-wrap input{
+  width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,215,0,0.12);
+  color:var(--text);padding:0.55rem 0.9rem 0.55rem 2.2rem;
+  font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;
+  transition:border-color 0.2s;
+  clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+}
+.search-wrap input:focus{border-color:var(--gold)}
+.search-wrap::before{content:'🔍';position:absolute;left:0.65rem;top:50%;transform:translateY(-50%);font-size:0.8rem;pointer-events:none}
+.filter-group{display:flex;gap:0.5rem;flex-wrap:wrap}
+.filter-btn{
+  background:transparent;border:1px solid rgba(255,215,0,0.18);
+  color:var(--text-dim);padding:0.4rem 0.9rem;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;letter-spacing:1px;
+  transition:all 0.2s;
+  clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold)}
+.filter-btn.active{background:rgba(255,215,0,0.1);border-color:var(--gold);color:var(--gold)}
+.filter-btn.f-pending.active{background:rgba(255,165,0,0.1);border-color:var(--amber);color:var(--amber)}
+.filter-btn.f-verified.active{background:rgba(34,197,94,0.1);border-color:var(--green);color:var(--green)}
+.filter-btn.f-rejected.active{background:rgba(230,57,70,0.1);border-color:var(--red);color:var(--red)}
+.export-btn{
+  margin-left:auto;background:linear-gradient(135deg,var(--dark3),var(--dark4));
+  border:1px solid rgba(255,215,0,0.2);color:var(--gold);
+  padding:0.4rem 1rem;cursor:pointer;
+  font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:1.5px;
+  transition:all 0.2s;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+.export-btn:hover{background:rgba(255,215,0,0.08);border-color:var(--gold)}
+.refresh-btn{
+  background:transparent;border:1px solid rgba(255,215,0,0.18);
+  color:var(--text-dim);padding:0.4rem 0.7rem;cursor:pointer;
+  font-size:0.85rem;transition:all 0.2s;
+  clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+}
+.refresh-btn:hover{color:var(--gold);border-color:var(--gold)}
+
+/* ── TABLE ─────────────────────────────────────────────────────────────────── */
+.table-wrap{padding:0 1.5rem 2rem;overflow-x:auto}
+.reg-table{width:100%;border-collapse:collapse;min-width:900px}
+.reg-table th{
+  text-align:left;padding:0.7rem 1rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:2px;
+  color:var(--text-dim);text-transform:uppercase;
+  border-bottom:1px solid rgba(255,215,0,0.12);
+  background:var(--dark2);position:sticky;top:60px;z-index:10;
+}
+.reg-table td{
+  padding:0.85rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:0.88rem;color:var(--text);vertical-align:middle;
+  transition:background 0.15s;
+}
+.reg-table tr:hover td{background:rgba(255,215,0,0.03)}
+.reg-table tr.new-row td{animation:row-in 0.5s ease}
+@keyframes row-in{from{background:rgba(255,215,0,0.12)}to{background:transparent}}
+
+/* Name col */
+.reg-name{font-weight:600;color:var(--text)}
+.reg-college{font-size:0.78rem;color:var(--text-dim);margin-top:0.15rem}
+
+/* Status badge */
+.badge{
+  display:inline-flex;align-items:center;gap:0.3rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:1px;
+  padding:0.25rem 0.65rem;text-transform:uppercase;
+  clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);
+}
+.badge.pending{background:rgba(255,165,0,0.12);border:1px solid rgba(255,165,0,0.3);color:var(--amber)}
+.badge.verified{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:var(--green)}
+.badge.rejected{background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.3);color:var(--red)}
+
+/* Action buttons */
+.act-group{display:flex;gap:0.4rem;flex-wrap:wrap}
+.act-btn{
+  border:none;padding:0.3rem 0.7rem;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:1px;
+  transition:all 0.2s;
+  clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);
+}
+.act-btn.verify{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--green)}
+.act-btn.verify:hover{background:rgba(34,197,94,0.3)}
+.act-btn.reject{background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.3);color:var(--red)}
+.act-btn.reject:hover{background:rgba(230,57,70,0.25)}
+.act-btn.view{background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:var(--blue)}
+.act-btn.view:hover{background:rgba(59,130,246,0.25)}
+.act-btn:disabled{opacity:0.3;cursor:not-allowed}
+
+/* ── LOADING STATE ─────────────────────────────────────────────────────────── */
+#loading-row td{text-align:center;padding:3rem;color:var(--text-dim)}
+.spinner-lg{
+  display:inline-block;width:32px;height:32px;
+  border:3px solid rgba(255,215,0,0.15);border-top-color:var(--gold);
+  border-radius:50%;animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────────────────── */
+#empty-row td{text-align:center;padding:3rem;color:var(--text-dim)}
+.empty-icon{font-size:2.5rem;display:block;margin-bottom:0.8rem}
+
+/* ── DETAIL MODAL ────────────────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0.88);
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{
+  background:var(--dark2);border:1px solid var(--glass-border);
+  width:100%;max-width:560px;max-height:90vh;overflow-y:auto;
+  padding:2rem 1.8rem;
+  clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));
+  position:relative;animation:pop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes pop{from{transform:scale(0.85)}to{transform:scale(1)}}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--red),transparent)}
+.modal-title{font-family:'Orbitron',monospace;font-size:0.9rem;color:var(--gold);letter-spacing:2px;margin-bottom:1.5rem}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:transparent;border:none;color:var(--text-dim);font-size:1.2rem;cursor:pointer;
+  transition:color 0.2s;
+}
+.modal-close:hover{color:var(--red)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+.detail-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,0,0.06);padding:0.7rem 0.9rem}
+.detail-item .dlabel{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.3rem}
+.detail-item .dval{font-size:0.9rem;color:var(--text);font-weight:500;word-break:break-all}
+.detail-item.full{grid-column:1/-1}
+.screenshot-frame{width:100%;max-height:280px;object-fit:contain;border:1px solid rgba(255,215,0,0.15);border-radius:4px;margin-top:0.5rem;display:block}
+.modal-actions{display:flex;gap:0.7rem;margin-top:1.5rem;flex-wrap:wrap}
+.modal-act-btn{
+  flex:1;border:none;padding:0.7rem;cursor:pointer;
+  font-family:'Orbitron',monospace;font-size:0.68rem;letter-spacing:1.5px;
+  transition:all 0.2s;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+.modal-act-btn.verify{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff}
+.modal-act-btn.verify:hover{box-shadow:0 4px 20px rgba(34,197,94,0.35)}
+.modal-act-btn.reject{background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff}
+.modal-act-btn.reject:hover{box-shadow:0 4px 20px rgba(230,57,70,0.35)}
+
+/* ── TOAST ───────────────────────────────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--dark2);border:1px solid var(--glass-border);
+  color:var(--text);padding:0.7rem 1.4rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;letter-spacing:1.5px;
+  z-index:999;opacity:0;transition:all 0.35s;pointer-events:none;white-space:nowrap;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{border-color:rgba(34,197,94,0.4);color:var(--green)}
+#toast.error{border-color:rgba(230,57,70,0.4);color:var(--red)}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+@media(max-width:700px){
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+  .detail-grid{grid-template-columns:1fr}
+  .detail-item.full{grid-column:1}
+  .toolbar{gap:0.7rem}
+  .export-btn{margin-left:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ──────────────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="brand">⚡ ELLECTRA</div>
+      <div class="sub">// ADMIN PANEL ACCESS</div>
+    </div>
+    <label class="login-label">Admin Email</label>
+    <input class="login-input" id="adm-email" type="email" placeholder="admin@email.com" autocomplete="email"/>
+    <label class="login-label">Password</label>
+    <input class="login-input" id="adm-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="login-btn" id="login-btn" onclick="doAdminLogin()">
+      <span id="login-label">⚡ ACCESS PANEL</span>
+    </button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ── ADMIN SHELL ────────────────────────────────────────────────────────────── -->
+<div id="admin-shell">
+
+  <!-- Top Nav -->
+  <nav class="admin-nav">
+    <div class="nav-left">
+      <span class="nav-brand">⚡ ELLECTRA</span>
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <div class="nav-right">
+      <span class="admin-user" id="admin-user-email"></span>
+      <button class="logout-btn" onclick="doLogout()">LOG OUT</button>
+    </div>
+  </nav>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-card all">
+      <div class="stat-num" id="s-total">—</div>
+      <div class="stat-label">Total Registrations</div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-num" id="s-pending">—</div>
+      <div class="stat-label">Pending Verification</div>
+    </div>
+    <div class="stat-card verified">
+      <div class="stat-num" id="s-verified">—</div>
+      <div class="stat-label">Verified / Confirmed</div>
+    </div>
+    <div class="stat-card rejected">
+      <div class="stat-num" id="s-rejected">—</div>
+      <div class="stat-label">Rejected</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <input type="text" id="search-input" placeholder="Search name, email, phone…" oninput="applyFilters()"/>
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">ALL</button>
+      <button class="filter-btn f-pending" data-filter="pending" onclick="setFilter('pending',this)">PENDING</button>
+      <button class="filter-btn f-verified" data-filter="verified" onclick="setFilter('verified',this)">VERIFIED</button>
+      <button class="filter-btn f-rejected" data-filter="rejected" onclick="setFilter('rejected',this)">REJECTED</button>
+    </div>
+    <button class="refresh-btn" title="Refresh data" onclick="reloadData()">↻</button>
+    <button class="export-btn" onclick="exportCSV()">⬇ EXPORT CSV</button>
+  </div>
+
+  <!-- Registrations Table -->
+  <div class="table-wrap">
+    <table class="reg-table" id="reg-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name / College</th>
+          <th>Department</th>
+          <th>Year</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>City</th>
+          <th>Status</th>
+          <th>Screenshot</th>
+          <th>Registered</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="reg-tbody">
+        <tr id="loading-row"><td colspan="11"><div class="spinner-lg"></div><br/>Loading registrations…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── DETAIL MODAL ────────────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('detail-modal').classList.remove('open')">✕</button>
+    <div class="modal-title">📋 REGISTRATION DETAIL</div>
+    <div class="detail-grid" id="modal-content"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- ── TOAST ───────────────────────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script type="module">
+import {
+  signInAdmin, logOut, onAuthChange,
+  listenRegistrations, updateRegistrationStatus,
+  auth
+} from './firebase.js';
+
+// ── State ────────────────────────────────────────────────────────────────────
+let allRegs      = [];
+let filteredRegs = [];
+let activeFilter = 'all';
+let unsubscribe  = null;
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+onAuthChange(user => {
+  if (user) {
+    document.getElementById('login-screen').style.display   = 'none';
+    document.getElementById('admin-shell').style.display    = 'flex';
+    document.getElementById('admin-user-email').textContent = user.email;
+    startLiveListener();
+  } else {
+    document.getElementById('login-screen').style.display   = 'flex';
+    document.getElementById('admin-shell').style.display    = 'none';
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+  }
+});
+
+// ── Login ─────────────────────────────────────────────────────────────────────
+window.doAdminLogin = async () => {
+  const email = document.getElementById('adm-email').value.trim();
+  const pass  = document.getElementById('adm-pass').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-err');
+  err.style.display = 'none';
+  if (!email || !pass) { showLoginErr('Enter email and password.'); return; }
+  btn.disabled = true;
+  document.getElementById('login-label').textContent = 'AUTHENTICATING…';
+  try {
+    await signInAdmin(email, pass);
+  } catch (e) {
+    showLoginErr(friendlyAuthErr(e.code));
+    btn.disabled = false;
+    document.getElementById('login-label').textContent = '⚡ ACCESS PANEL';
+  }
+};
+
+window.doLogout = async () => {
+  await logOut();
+  allRegs = []; filteredRegs = [];
+};
+
+// Allow Enter key in password field
+document.getElementById('adm-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.doAdminLogin();
+});
+
+function showLoginErr(msg) {
+  const e = document.getElementById('login-err');
+  e.textContent = msg;
+  e.style.display = 'block';
+}
+
+function friendlyAuthErr(code) {
+  if (!code) return 'Login failed. Try again.';
+  if (code.includes('wrong-password') || code.includes('invalid-credential')) return '✕ Incorrect email or password.';
+  if (code.includes('user-not-found')) return '✕ Admin account not found.';
+  if (code.includes('too-many-requests')) return '✕ Too many attempts. Try later.';
+  return '✕ Login failed: ' + code;
+}
+
+// ── Live Listener ─────────────────────────────────────────────────────────────
+function startLiveListener() {
+  if (unsubscribe) unsubscribe();
+  unsubscribe = listenRegistrations(regs => {
+    allRegs = regs;
+    updateStats(regs);
+    applyFilters();
+  });
+}
+
+window.reloadData = () => {
+  document.getElementById('reg-tbody').innerHTML =
+    `<tr id="loading-row"><td colspan="11"><div class="spinner-lg"></div><br/>Refreshing…</td></tr>`;
+  startLiveListener();
+  showToast('✓ Data refreshed', 'success');
+};
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function updateStats(regs) {
+  document.getElementById('s-total').textContent    = regs.length;
+  document.getElementById('s-pending').textContent  = regs.filter(r => r.status === 'pending').length;
+  document.getElementById('s-verified').textContent = regs.filter(r => r.status === 'verified').length;
+  document.getElementById('s-rejected').textContent = regs.filter(r => r.status === 'rejected').length;
+}
+
+// ── Filter & Search ──────────────────────────────────────────────────────────
+window.setFilter = (filter, btn) => {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+};
+
+window.applyFilters = () => {
+  const q = (document.getElementById('search-input').value || '').toLowerCase();
+  filteredRegs = allRegs.filter(r => {
+    const matchFilter = activeFilter === 'all' || r.status === activeFilter;
+    const matchSearch = !q || [r.name, r.email, r.phone, r.college, r.city]
+      .some(f => (f || '').toLowerCase().includes(q));
+    return matchFilter && matchSearch;
+  });
+  renderTable(filteredRegs);
+};
+
+// ── Render Table ─────────────────────────────────────────────────────────────
+function renderTable(regs) {
+  const tbody = document.getElementById('reg-tbody');
+  if (!regs.length) {
+    tbody.innerHTML = `<tr id="empty-row"><td colspan="11">
+      <span class="empty-icon">📭</span>
+      No registrations found.
+    </td></tr>`;
+    return;
+  }
+  tbody.innerHTML = regs.map((r, i) => `
+    <tr>
+      <td style="color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.7rem">${i + 1}</td>
+      <td>
+        <div class="reg-name">${esc(r.name)}</div>
+        <div class="reg-college">${esc(r.college)}</div>
+      </td>
+      <td>${esc(r.department)}</td>
+      <td style="font-size:0.8rem;color:var(--text-dim)">${esc(r.year)}</td>
+      <td style="font-family:'Share Tech Mono',monospace;font-size:0.8rem">${esc(r.phone)}</td>
+      <td style="font-size:0.82rem">${esc(r.email)}</td>
+      <td>${esc(r.city)}</td>
+      <td><span class="badge ${r.status}">${statusIcon(r.status)} ${r.status}</span></td>
+      <td>
+        ${r.screenshotURL
+          ? `<a href="${r.screenshotURL}" target="_blank"
+               style="color:var(--blue);font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:1px">
+               VIEW ↗
+             </a>`
+          : `<span style="color:var(--text-dim);font-size:0.75rem">—</span>`}
+      </td>
+      <td style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-dim);white-space:nowrap">
+        ${fmtDate(r.createdAt)}
+      </td>
+      <td>
+        <div class="act-group">
+          <button class="act-btn view" onclick="openDetail('${r.id}')">DETAIL</button>
+          ${r.status !== 'verified'
+            ? `<button class="act-btn verify" onclick="changeStatus('${r.id}','verified',this)">✓ VERIFY</button>`
+            : ''}
+          ${r.status !== 'rejected'
+            ? `<button class="act-btn reject" onclick="changeStatus('${r.id}','rejected',this)">✕ REJECT</button>`
+            : ''}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ── Status Update ─────────────────────────────────────────────────────────────
+window.changeStatus = async (id, status, btn) => {
+  if (btn) btn.disabled = true;
+  try {
+    await updateRegistrationStatus(id, status);
+    const label = status === 'verified' ? 'VERIFIED' : 'REJECTED';
+    showToast(`✓ Registration ${label}`, status === 'verified' ? 'success' : 'error');
+  } catch (e) {
+    showToast('✕ Update failed: ' + e.message, 'error');
+    if (btn) btn.disabled = false;
+  }
+};
+
+// ── Detail Modal ─────────────────────────────────────────────────────────────
+window.openDetail = (id) => {
+  const r = allRegs.find(x => x.id === id);
+  if (!r) return;
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="detail-item"><div class="dlabel">Full Name</div><div class="dval">${esc(r.name)}</div></div>
+    <div class="detail-item"><div class="dlabel">College/School</div><div class="dval">${esc(r.college)}</div></div>
+    <div class="detail-item"><div class="dlabel">Department</div><div class="dval">${esc(r.department)}</div></div>
+    <div class="detail-item"><div class="dlabel">Year/Class</div><div class="dval">${esc(r.year)}</div></div>
+    <div class="detail-item"><div class="dlabel">Phone</div><div class="dval">${esc(r.phone)}</div></div>
+    <div class="detail-item"><div class="dlabel">Email</div><div class="dval">${esc(r.email)}</div></div>
+    <div class="detail-item"><div class="dlabel">City</div><div class="dval">${esc(r.city)}</div></div>
+    <div class="detail-item"><div class="dlabel">Status</div><div class="dval"><span class="badge ${r.status}">${statusIcon(r.status)} ${r.status}</span></div></div>
+    <div class="detail-item"><div class="dlabel">Registered On</div><div class="dval">${fmtDate(r.createdAt)}</div></div>
+    <div class="detail-item"><div class="dlabel">Google Account</div><div class="dval">${esc(r.googleEmail || r.email)}</div></div>
+    ${r.screenshotURL ? `
+    <div class="detail-item full">
+      <div class="dlabel">Payment Screenshot</div>
+      <a href="${r.screenshotURL}" target="_blank">
+        <img class="screenshot-frame" src="${r.screenshotURL}" alt="Payment screenshot" onerror="this.style.display='none'"/>
+      </a>
+    </div>` : ''}
+  `;
+  const actions = document.getElementById('modal-actions');
+  actions.innerHTML = `
+    ${r.status !== 'verified'
+      ? `<button class="modal-act-btn verify" onclick="changeStatus('${r.id}','verified');document.getElementById('detail-modal').classList.remove('open')">✓ VERIFY PAYMENT</button>`
+      : ''}
+    ${r.status !== 'rejected'
+      ? `<button class="modal-act-btn reject" onclick="changeStatus('${r.id}','rejected');document.getElementById('detail-modal').classList.remove('open')">✕ REJECT</button>`
+      : ''}
+  `;
+  document.getElementById('detail-modal').classList.add('open');
+};
+
+window.closeModal = (e) => {
+  if (e.target.id === 'detail-modal') {
+    document.getElementById('detail-modal').classList.remove('open');
+  }
+};
+
+// ── CSV Export ────────────────────────────────────────────────────────────────
+window.exportCSV = () => {
+  const rows = [
+    ['#','Name','College','Department','Year','Phone','Email','City','Status','Registered On','Screenshot URL']
+  ];
+  filteredRegs.forEach((r, i) => {
+    rows.push([
+      i + 1, r.name, r.college, r.department, r.year,
+      r.phone, r.email, r.city, r.status, fmtDate(r.createdAt),
+      r.screenshotURL || ''
+    ]);
+  });
+  const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `ellectra-registrations-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('✓ CSV exported', 'success');
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str || '—')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+  return d.toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' });
+}
+
+function statusIcon(s) {
+  return s === 'verified' ? '✓' : s === 'rejected' ? '✕' : '⏳';
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────────
+window.showToast = (msg, type = '') => {
+  const t = document.getElementById('toast');
+  t.textContent  = msg;
+  t.className    = 'show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 3000);
+};
+</script>
+</body>
+</html>
