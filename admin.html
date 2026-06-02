@@ -415,15 +415,14 @@ import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
 import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-// ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────────
-// Get this from Firebase Console → Project Settings → Your apps → SDK setup
+// ── FIREBASE CONFIG ───────────────────────────────────────────────────────────
 const firebaseConfig = {
-  apiKey:            window.__FB_API_KEY__            || "PASTE_API_KEY",
-  authDomain:        window.__FB_AUTH_DOMAIN__        || "PASTE_AUTH_DOMAIN",
-  projectId:         window.__FB_PROJECT_ID__         || "PASTE_PROJECT_ID",
-  storageBucket:     window.__FB_STORAGE_BUCKET__     || "PASTE_STORAGE_BUCKET",
-  messagingSenderId: window.__FB_MESSAGING_SENDER_ID__|| "PASTE_MESSAGING_SENDER_ID",
-  appId:             window.__FB_APP_ID__             || "PASTE_APP_ID",
+  apiKey:            "AIzaSyA47Gvwpduwr-8swRqHgZLeC5XYzLz248g",
+  authDomain:        "internship-ellectra.firebaseapp.com",
+  projectId:         "internship-ellectra",
+  storageBucket:     "internship-ellectra.firebasestorage.app",
+  messagingSenderId: "1055612355617",
+  appId:             "1:1055612355617:web:e77c71332580fe07ba0f60",
 };
 
 // Prevent double-init on hot reload
@@ -532,11 +531,7 @@ window.doLogout = async () => {
 };
 
 // Allow Enter key in password field
-// Show config warning if still placeholder
-if (firebaseConfig.apiKey === 'PASTE_API_KEY') {
-  const n = document.getElementById('config-notice');
-  if (n) n.style.display = 'block';
-}
+// Firebase config is live — no placeholder warning needed
 
 document.getElementById('adm-pass').addEventListener('keydown', e => {
   if (e.key === 'Enter') window.doAdminLogin();
