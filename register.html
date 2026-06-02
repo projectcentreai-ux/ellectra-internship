@@ -119,6 +119,36 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .wa-float{position:fixed;bottom:1.8rem;right:1.5rem;z-index:200;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5rem;box-shadow:0 4px 20px rgba(37,211,102,0.4);animation:wa-bounce 2.5s ease-in-out infinite}
 @keyframes wa-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 
+/* ── RECEIPT ─────────────────────────────────────────────────────────────── */
+#receipt-wrap{margin-top:1.4rem;width:100%;display:none}
+#receipt-canvas-wrap{display:flex;justify-content:center;margin-bottom:0.9rem}
+#receipt-canvas-wrap canvas,#receipt-canvas-wrap img{
+  max-width:100%;border-radius:6px;
+  box-shadow:0 4px 24px rgba(255,215,0,0.18);
+  border:1px solid var(--glass-border);
+}
+.receipt-btn-row{display:flex;gap:0.7rem;justify-content:center;flex-wrap:wrap}
+.receipt-btn{
+  display:inline-flex;align-items:center;gap:0.45rem;
+  padding:0.6rem 1.3rem;border:none;cursor:pointer;
+  font-family:'Orbitron',monospace;font-size:0.68rem;font-weight:700;letter-spacing:1.5px;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+  transition:all 0.25s;
+}
+.receipt-btn.download{background:linear-gradient(135deg,var(--gold),var(--amber));color:#000}
+.receipt-btn.print{background:transparent;border:1px solid var(--gold);color:var(--gold)}
+.receipt-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(255,215,0,0.3)}
+
+/* hidden receipt template rendered off-screen */
+#receipt-tpl{
+  position:fixed;left:-9999px;top:0;
+  width:480px;
+  background:#0d0d0d;
+  font-family:'Rajdhani',sans-serif;
+  padding:0;
+  z-index:-1;
+}
+
 /* ══ MOBILE ══ */
 @media(max-width:768px){
   /* nav */
@@ -312,7 +342,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 <!-- SUCCESS POPUP -->
 <div class="popup-overlay" id="success-popup">
-  <div class="popup-box">
+  <div class="popup-box" style="max-width:500px;overflow-y:auto;max-height:92vh">
     <span class="popup-icon">🎉</span>
     <div class="popup-title">REGISTRATION SUCCESSFUL!</div>
     <p class="popup-msg">
@@ -321,9 +351,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       <strong style="color:var(--gold)">WhatsApp: 6381733447</strong> for updates.<br/><br/>
       Your internship certificate will be provided after successful completion. 🎓
     </p>
-    <button class="popup-close" onclick="closePopup()">BACK TO HOME</button>
+    <!-- Receipt section -->
+    <div id="receipt-wrap">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.6rem;text-transform:uppercase">
+        ⬇ Your Registration Receipt
+      </div>
+      <div id="receipt-canvas-wrap">
+        <span style="color:var(--text-dim);font-size:0.8rem">Generating receipt…</span>
+      </div>
+      <div class="receipt-btn-row">
+        <button class="receipt-btn download" id="btn-download-receipt">⬇ DOWNLOAD RECEIPT</button>
+        <button class="receipt-btn print"    id="btn-print-receipt">🖨 PRINT</button>
+      </div>
+    </div>
+    <button class="popup-close" onclick="closePopup()" style="margin-top:1.2rem">BACK TO HOME</button>
   </div>
 </div>
+
+<!-- Off-screen receipt template (rendered by html2canvas) -->
+<div id="receipt-tpl"></div>
 
 <!-- FLOATING WA -->
 <a href="https://wa.me/916381733447?text=Hi%2C%20I%20just%20registered%20for%20ELLECTRA%20Internship!" target="_blank" class="wa-float">💬</a>
@@ -466,7 +512,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       });
 
       setStatus('');
-      document.getElementById('success-popup').classList.add('active');
+      // Store registration data for receipt
+      window._regData = { name, college, dept, year, phone, email, city };
+      showSuccessWithReceipt(window._regData, imgData.directUrl);
     } catch (err) {
       console.error(err);
       showError('Registration failed: ' + err.message);
@@ -477,6 +525,126 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
   };
 
   window.closePopup = () => { window.location.href = 'index.html'; };
+
+  // ── Receipt generation ────────────────────────────────────────────────────
+  function showSuccessWithReceipt(data, screenshotURL) {
+    document.getElementById('success-popup').classList.add('active');
+    buildReceiptImage(data, screenshotURL);
+  }
+
+  async function buildReceiptImage(data, screenshotURL) {
+    const tpl = document.getElementById('receipt-tpl');
+    const now = new Date();
+    const dateStr = now.toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' });
+    const receiptId = 'ELL-' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '-' + String(Math.floor(Math.random()*9000)+1000);
+
+    tpl.innerHTML = `
+      <div style="width:480px;background:#0d0d0d;font-family:'Rajdhani',sans-serif;padding:0;overflow:hidden">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#1a1400,#0d0d0d);padding:28px 28px 20px;border-bottom:2px solid #FFD700;text-align:center;position:relative">
+          <div style="font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#FFD700;letter-spacing:5px;margin-bottom:4px">⚡ ELLECTRA</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#FFA500;letter-spacing:3px;text-transform:uppercase">5-Day Internship Program · Registration Receipt</div>
+          <div style="position:absolute;top:12px;right:16px;font-family:'Share Tech Mono',monospace;font-size:9px;color:#555;letter-spacing:1px">${receiptId}</div>
+        </div>
+
+        <!-- Status banner -->
+        <div style="background:rgba(34,197,94,0.12);border-bottom:1px solid rgba(34,197,94,0.3);padding:10px 28px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">✅</span>
+          <div>
+            <div style="font-family:'Orbitron',monospace;font-size:11px;color:#22C55E;letter-spacing:2px">REGISTRATION CONFIRMED</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;margin-top:2px">Payment verification pending · ${dateStr}</div>
+          </div>
+        </div>
+
+        <!-- Details grid -->
+        <div style="padding:20px 28px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          ${[
+            ['Full Name',   data.name],
+            ['College',     data.college],
+            ['Department',  data.dept],
+            ['Year / Class',data.year],
+            ['Phone',       data.phone],
+            ['Email',       data.email],
+            ['City',        data.city],
+            ['Amount Paid', '₹500'],
+          ].map(([label,val]) => `
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,0,0.08);padding:8px 12px;border-radius:2px">
+              <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px">${label}</div>
+              <div style="font-size:13px;color:#f0f0f0;font-weight:600;word-break:break-all">${val || '—'}</div>
+            </div>`).join('')}
+        </div>
+
+        <!-- Payment screenshot thumbnail -->
+        ${screenshotURL ? `
+        <div style="padding:0 28px 16px">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Payment Screenshot</div>
+          <img src="${screenshotURL}" crossorigin="anonymous"
+               style="width:100%;max-height:160px;object-fit:contain;border:1px solid rgba(255,215,0,0.15);border-radius:4px;display:block;background:#111"/>
+        </div>` : ''}
+
+        <!-- Footer -->
+        <div style="background:rgba(255,215,0,0.04);border-top:1px solid rgba(255,215,0,0.12);padding:14px 28px;text-align:center">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:#666;letter-spacing:1.5px">WhatsApp: 6381733447 · ellectrainternship.in</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:#444;margin-top:4px;letter-spacing:1px">This receipt is auto-generated. Certificate issued after program completion.</div>
+        </div>
+      </div>`;
+
+    // Load html2canvas then render
+    await loadHtml2Canvas();
+
+    try {
+      const canvas = await html2canvas(tpl.firstElementChild, {
+        backgroundColor: '#0d0d0d',
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+      });
+
+      const wrap = document.getElementById('receipt-canvas-wrap');
+      wrap.innerHTML = '';
+      wrap.appendChild(canvas);
+
+      const dataUrl = canvas.toDataURL('image/png');
+
+      // Download button
+      document.getElementById('btn-download-receipt').onclick = () => {
+        const a = document.createElement('a');
+        a.href     = dataUrl;
+        a.download = `ELLECTRA-Receipt-${receiptId}.png`;
+        a.click();
+      };
+
+      // Print button
+      document.getElementById('btn-print-receipt').onclick = () => {
+        const win = window.open('', '_blank');
+        win.document.write(`
+          <html><head><title>ELLECTRA Receipt</title>
+          <style>body{margin:0;background:#fff;display:flex;justify-content:center;padding:20px}
+          img{max-width:520px;width:100%}</style></head>
+          <body><img src="${dataUrl}" onload="window.print();window.close()"/></body></html>`);
+        win.document.close();
+      };
+
+      document.getElementById('receipt-wrap').style.display = 'block';
+    } catch(e) {
+      console.error('Receipt generation failed:', e);
+      document.getElementById('receipt-canvas-wrap').innerHTML =
+        '<span style="color:#E63946;font-size:0.8rem">Receipt generation failed. Please screenshot this page.</span>';
+      document.getElementById('receipt-wrap').style.display = 'block';
+    }
+  }
+
+  function loadHtml2Canvas() {
+    return new Promise((resolve, reject) => {
+      if (window.html2canvas) return resolve();
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload  = resolve;
+      s.onerror = () => reject(new Error('html2canvas failed to load'));
+      document.head.appendChild(s);
+    });
+  }
 
   function showError(msg) {
     const b = document.getElementById('form-error');
