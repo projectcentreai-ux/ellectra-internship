@@ -375,10 +375,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 <a href="https://wa.me/916381733447?text=Hi%2C%20I%20just%20registered%20for%20ELLECTRA%20Internship!" target="_blank" class="wa-float">💬</a>
 
 <script type="module">
-  import {
-    signInWithGoogle, onAuthChange,
-    addRegistration, auth
-  } from './firebase.js';
+  // ── Inline Firebase SDK (no external firebase.js needed) ─────────────────────
+  import { initializeApp, getApps }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, collection, addDoc, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyA47Gvwpduwr-8swRqHgZLeC5XYzLz248g",
+    authDomain:        "internship-ellectra.firebaseapp.com",
+    projectId:         "internship-ellectra",
+    storageBucket:     "internship-ellectra.firebasestorage.app",
+    messagingSenderId: "1055612355617",
+    appId:             "1:1055612355617:web:e77c71332580fe07ba0f60",
+  };
+
+  const app      = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const db       = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  const signInWithGoogle  = () => signInWithPopup(auth, provider);
+  const onAuthChange      = (cb) => onAuthStateChanged(auth, cb);
+  const addRegistration   = (data) =>
+    addDoc(collection(db, 'registrations'), { ...data, status: 'pending', createdAt: serverTimestamp() });
 
   // ── ImgBB config ────────────────────────────────────────────────────────────
   const IMGBB_API_KEY = '081139e431387df68a678be0c8b96ec6';
