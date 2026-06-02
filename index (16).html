@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ELLECTRA 5-Day Internship Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & BASE ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#FFD700;
+  --amber:#FFA500;
+  --red:#E63946;
+  --red-dark:#B00020;
+  --black:#050505;
+  --dark:#0A0A0A;
+  --dark2:#111111;
+  --dark3:#1A1A1A;
+  --glass:rgba(255,215,0,0.06);
+  --glass-border:rgba(255,215,0,0.18);
+  --text:#F0F0F0;
+  --text-dim:#999;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Rajdhani',sans-serif;
+  background:var(--black);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+
+/* ── VIDEO BG ── */
+#hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+#bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.72;pointer-events:none;z-index:0}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.28) 0%,rgba(5,5,5,0.38) 60%,var(--black) 100%);z-index:1}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.75rem 1.5rem;
+  background:rgba(5,5,5,0.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--glass-border);
+}
+.nav-logo{display:flex;align-items:center;gap:0.6rem}
+.nav-logo img{height:38px;width:auto;filter:drop-shadow(0 0 8px var(--gold))}
+.nav-brand{font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:var(--gold);letter-spacing:2px}
+.nav-links{display:flex;gap:1.2rem;list-style:none}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.9rem;letter-spacing:1px;transition:color 0.2s;text-transform:uppercase}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{
+  background:linear-gradient(135deg,var(--red),var(--red-dark));
+  color:#fff;border:none;padding:0.45rem 1.1rem;
+  font-family:'Orbitron',monospace;font-size:0.72rem;
+  font-weight:700;letter-spacing:1.5px;cursor:pointer;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition:all 0.25s;text-decoration:none;display:inline-block;
+}
+.nav-cta:hover{background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--black);transform:scale(1.04)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{width:24px;height:2px;background:var(--gold);transition:all 0.3s;display:block}
+
+/* ── HERO CONTENT ── */
+.hero-content{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding:6rem 1.5rem 3rem;
+  max-width:900px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.4);
+  color:var(--red);font-family:'Share Tech Mono',monospace;
+  font-size:0.72rem;letter-spacing:3px;padding:0.35rem 1rem;
+  text-transform:uppercase;margin-bottom:1.5rem;
+  animation:pulse-border 2s ease-in-out infinite;
+}
+@keyframes pulse-border{0%,100%{border-color:rgba(230,57,70,0.4)}50%{border-color:rgba(230,57,70,0.9)}}
+.hero-logo-img{width:120px;height:120px;object-fit:contain;margin-bottom:1.2rem;filter:drop-shadow(0 0 24px var(--gold));animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero-title{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(2rem,6vw,4rem);
+  font-weight:900;line-height:1.1;letter-spacing:4px;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--amber) 40%,var(--red) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-shadow:none;margin-bottom:0.5rem;
+  animation:title-glow 3s ease-in-out infinite alternate;
+}
+@keyframes title-glow{from{filter:drop-shadow(0 0 8px rgba(255,215,0,0.3))}to{filter:drop-shadow(0 0 20px rgba(255,165,0,0.6))}}
+.hero-subtitle{
+  font-size:clamp(1rem,2.5vw,1.4rem);color:var(--text-dim);
+  font-weight:500;letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:2rem;font-family:'Rajdhani',sans-serif;
+}
+.hero-stats{
+  display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;
+  margin-bottom:2.5rem;
+}
+.stat-item{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--glass);border:1px solid var(--glass-border);
+  padding:0.8rem 1.4rem;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+}
+.stat-num{font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;color:var(--gold)}
+.stat-label{font-size:0.72rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold),var(--amber));
+  color:var(--black);border:none;padding:0.85rem 2rem;
+  font-family:'Orbitron',monospace;font-size:0.8rem;
+  font-weight:700;letter-spacing:2px;cursor:pointer;
+  clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+  transition:all 0.3s;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-primary:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 8px 30px rgba(255,215,0,0.4)}
+.btn-secondary{
+  background:transparent;
+  color:var(--gold);border:1px solid var(--gold);padding:0.85rem 2rem;
+  font-family:'Orbitron',monospace;font-size:0.8rem;
+  font-weight:700;letter-spacing:2px;cursor:pointer;
+  clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+  transition:all 0.3s;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-secondary:hover{background:var(--glass);transform:translateY(-3px);box-shadow:0 8px 30px rgba(255,215,0,0.2)}
+.btn-google{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);
+  color:var(--text);padding:0.85rem 2rem;
+  font-family:'Rajdhani',sans-serif;font-size:1rem;
+  font-weight:600;letter-spacing:1px;cursor:pointer;
+  clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+  transition:all 0.3s;display:inline-flex;align-items:center;gap:0.6rem;
+}
+.btn-google:hover{background:rgba(255,255,255,0.12);transform:translateY(-3px)}
+.btn-google img{width:18px;height:18px}
+
+/* ── SECTIONS ── */
+section{padding:5rem 1.5rem;position:relative}
+.section-title{
+  text-align:center;font-family:'Orbitron',monospace;
+  font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:700;
+  color:var(--gold);letter-spacing:4px;text-transform:uppercase;
+  margin-bottom:0.8rem;
+}
+.section-line{
+  display:block;width:80px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+  margin:0 auto 3rem;
+}
+.section-tag{
+  text-align:center;color:var(--red);font-family:'Share Tech Mono',monospace;
+  font-size:0.75rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:0.5rem;
+}
+
+/* ── ABOUT SECTION ── */
+.about-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:1fr;gap:2rem;
+}
+.about-intro{
+  background:var(--glass);border:1px solid var(--glass-border);
+  padding:2rem;position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));
+}
+.about-intro::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),var(--red),transparent);
+}
+.about-intro p{color:var(--text-dim);font-size:1.05rem;line-height:1.8;font-weight:400}
+.about-intro p strong{color:var(--gold)}
+
+/* ── CARDS GRID ── */
+.cards-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.5rem;
+}
+.info-card{
+  background:var(--dark2);
+  border:1px solid rgba(255,215,0,0.12);
+  padding:2rem 1.8rem;
+  position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,0 100%);
+  transition:all 0.4s cubic-bezier(0.25,0.8,0.25,1);
+  animation:card-in 0.7s ease both;
+}
+.info-card:nth-child(1){animation-delay:0.1s}
+.info-card:nth-child(2){animation-delay:0.2s}
+.info-card:nth-child(3){animation-delay:0.3s}
+.info-card:nth-child(4){animation-delay:0.4s}
+@keyframes card-in{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.info-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--red),var(--gold));
+  transform:scaleX(0);transform-origin:left;transition:transform 0.4s;
+}
+.info-card:hover::before{transform:scaleX(1)}
+.info-card:hover{
+  border-color:rgba(255,215,0,0.35);
+  transform:translateY(-6px);
+  box-shadow:0 20px 50px rgba(255,215,0,0.1),0 0 0 1px rgba(255,215,0,0.1);
+  background:var(--dark3);
+}
+.card-icon{
+  width:52px;height:52px;
+  background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(230,57,70,0.12));
+  border:1px solid rgba(255,215,0,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;margin-bottom:1.2rem;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+.card-title{
+  font-family:'Orbitron',monospace;font-size:0.85rem;
+  font-weight:700;color:var(--gold);letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:1rem;
+}
+.card-list{list-style:none;display:flex;flex-direction:column;gap:0.55rem}
+.card-list li{
+  display:flex;align-items:flex-start;gap:0.6rem;
+  color:var(--text-dim);font-size:0.92rem;font-weight:400;line-height:1.4;
+}
+.card-list li::before{
+  content:'▸';color:var(--red);font-size:0.75rem;margin-top:0.15rem;flex-shrink:0;
+}
+.card-list li:hover{color:var(--text)}
+
+/* ── SCHEDULE ── */
+#schedule{background:var(--dark2)}
+.schedule-grid{
+  max-width:900px;margin:0 auto;
+  display:flex;flex-direction:column;gap:1.2rem;
+}
+.day-card{
+  background:var(--dark3);border:1px solid rgba(255,215,0,0.1);
+  display:flex;align-items:stretch;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);
+  transition:all 0.35s;position:relative;
+}
+.day-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,215,0,0.03),transparent);
+  opacity:0;transition:opacity 0.35s;
+}
+.day-card:hover{border-color:rgba(255,165,0,0.35);transform:translateX(6px)}
+.day-card:hover::after{opacity:1}
+.day-num{
+  min-width:80px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(180deg,var(--red-dark),var(--red));
+  padding:1.2rem 0.8rem;
+}
+.day-label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:rgba(255,255,255,0.7);letter-spacing:2px}
+.day-number{font-family:'Orbitron',monospace;font-size:1.8rem;font-weight:900;color:#fff;line-height:1}
+.day-body{padding:1.2rem 1.5rem;flex:1}
+.day-name{font-family:'Orbitron',monospace;font-size:0.78rem;color:var(--gold);letter-spacing:2px;margin-bottom:0.5rem}
+.day-topics{display:flex;flex-wrap:wrap;gap:0.4rem}
+.topic-chip{
+  background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);
+  color:var(--text-dim);font-size:0.75rem;padding:0.2rem 0.6rem;
+  font-family:'Rajdhani',sans-serif;font-weight:500;
+  clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);
+  transition:all 0.2s;cursor:default;
+}
+.topic-chip:hover{background:rgba(255,215,0,0.15);color:var(--text);border-color:rgba(255,215,0,0.5)}
+
+/* ── HIGHLIGHTS STRIP ── */
+#highlights{
+  background:linear-gradient(135deg,var(--dark2),var(--dark3));
+  border-top:1px solid rgba(255,215,0,0.08);
+  border-bottom:1px solid rgba(255,215,0,0.08);
+}
+.highlights-strip{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1rem;
+}
+.hl-item{
+  display:flex;align-items:center;gap:0.8rem;
+  background:var(--glass);border:1px solid var(--glass-border);
+  padding:1.1rem 1.2rem;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+  transition:all 0.3s;
+}
+.hl-item:hover{border-color:rgba(230,57,70,0.4);background:rgba(230,57,70,0.05);transform:scale(1.02)}
+.hl-icon{font-size:1.4rem;flex-shrink:0}
+.hl-text{font-size:0.85rem;color:var(--text-dim);font-weight:500;line-height:1.3}
+.hl-text:hover{color:var(--text)}
+
+/* ── WHO CAN JOIN ── */
+.who-grid{
+  max-width:800px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1.2rem;
+}
+.who-card{
+  background:var(--dark2);border:1px solid rgba(230,57,70,0.2);
+  padding:1.8rem 1.2rem;text-align:center;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+  transition:all 0.35s;
+}
+.who-card:hover{border-color:rgba(255,215,0,0.5);transform:translateY(-5px);background:var(--dark3);box-shadow:0 15px 40px rgba(255,215,0,0.08)}
+.who-icon{font-size:2rem;margin-bottom:0.8rem;display:block}
+.who-label{font-family:'Orbitron',monospace;font-size:0.72rem;font-weight:700;color:var(--text);letter-spacing:1.5px;text-transform:uppercase}
+
+/* ── FEE SECTION ── */
+#fee{
+  background:var(--dark2);
+  text-align:center;
+}
+.fee-box{
+  max-width:500px;margin:0 auto;
+  background:linear-gradient(135deg,rgba(255,215,0,0.06),rgba(230,57,70,0.06));
+  border:1px solid rgba(255,215,0,0.25);
+  padding:3rem 2rem;position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));
+}
+.fee-box::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(255,215,0,0.05) 0%,transparent 70%);
+  pointer-events:none;
+}
+.fee-amount{
+  font-family:'Orbitron',monospace;font-size:clamp(3rem,10vw,5rem);
+  font-weight:900;
+  background:linear-gradient(135deg,var(--gold),var(--amber));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;line-height:1;margin-bottom:0.3rem;
+  animation:price-pulse 2.5s ease-in-out infinite alternate;
+}
+@keyframes price-pulse{from{filter:drop-shadow(0 0 8px rgba(255,215,0,0.4))}to{filter:drop-shadow(0 0 24px rgba(255,165,0,0.8))}}
+.fee-label{color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-size:1rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:0.5rem}
+.fee-duration{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);
+  color:var(--red);font-family:'Share Tech Mono',monospace;font-size:0.8rem;
+  letter-spacing:2px;padding:0.4rem 1rem;margin-top:1.2rem;
+}
+.fee-cert{color:var(--text-dim);font-size:0.9rem;margin-top:1rem;line-height:1.6}
+
+/* ── CONTACT SECTION ── */
+.contact-box{
+  max-width:500px;margin:0 auto;text-align:center;
+  background:var(--glass);border:1px solid var(--glass-border);
+  padding:2.5rem 2rem;
+  clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,0 100%);
+}
+.wa-btn{
+  display:inline-flex;align-items:center;gap:0.7rem;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:#fff;text-decoration:none;padding:1rem 2rem;
+  font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;
+  letter-spacing:1.5px;margin-top:1.5rem;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+  transition:all 0.3s;
+}
+.wa-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 10px 30px rgba(37,211,102,0.3)}
+.wa-icon{font-size:1.3rem}
+
+/* ── FLOATING WA BUTTON ── */
+.wa-float{
+  position:fixed;bottom:1.8rem;right:1.5rem;z-index:200;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;font-size:1.6rem;
+  box-shadow:0 4px 20px rgba(37,211,102,0.4);
+  animation:wa-bounce 2.5s ease-in-out infinite;transition:all 0.3s;
+}
+@keyframes wa-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.wa-float:hover{transform:scale(1.15)!important;box-shadow:0 6px 30px rgba(37,211,102,0.6)}
+
+/* ── TICKER ── */
+.ticker{
+  background:linear-gradient(90deg,var(--red-dark),var(--red));
+  padding:0.5rem 0;overflow:hidden;border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:ticker 25s linear infinite}
+@keyframes ticker{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+.ticker-text{font-family:'Share Tech Mono',monospace;font-size:0.78rem;letter-spacing:3px;color:#fff;padding-right:4rem}
+.ticker-sep{color:var(--gold);padding-right:4rem}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--dark2);border-top:1px solid var(--glass-border);
+  padding:2.5rem 1.5rem;text-align:center;
+}
+.footer-logo{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:var(--gold);letter-spacing:4px;margin-bottom:0.5rem}
+.footer-sub{color:var(--text-dim);font-size:0.82rem;letter-spacing:2px}
+
+/* ── REVEAL ANIMATION ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── MOBILE NAV ── */
+@media(max-width:768px){
+  .nav-links{
+    display:none;flex-direction:column;gap:0;
+    position:absolute;top:100%;left:0;right:0;
+    background:rgba(5,5,5,0.97);border-bottom:1px solid var(--glass-border);
+    padding:1rem 1.5rem;
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{padding:0.6rem 0;border-bottom:1px solid rgba(255,215,0,0.05)}
+  .hamburger{display:flex}
+  .nav-cta{display:none}
+  .hero-stats{gap:1rem}
+  .stat-item{padding:0.6rem 1rem}
+  .stat-num{font-size:1.3rem}
+  section{padding:3.5rem 1rem}
+  .fee-box{padding:2rem 1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <img src="https://raw.githubusercontent.com/projectcentreai-ux/ellectra-internship/main/ellectra%20new%20logo.png" alt="ELLECTRA" onerror="this.style.display='none'"/>
+    <span class="nav-brand">ELLECTRA</span>
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#highlights">Highlights</a></li>
+    <li><a href="#fee">Fee</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="register.html" class="nav-cta">REGISTER NOW</a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="https://github.com/projectcentreai-ux/Ellectra-projects/raw/main/47215-450995786.mp4" type="video/mp4"/>
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">⚡ Enrollment Open · Limited Seats</div>
+    <img class="hero-logo-img"
+         src="https://raw.githubusercontent.com/projectcentreai-ux/ellectra-internship/main/ellectra%20new%20logo.png"
+         alt="ELLECTRA Logo"
+         onerror="this.style.display='none'"/>
+    <h1 class="hero-title">ELLECTRA</h1>
+    <p class="hero-subtitle">5-Day Internship Program</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">5</span>
+        <span class="stat-label">Days</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">₹500</span>
+        <span class="stat-label">Fee Only</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">10+</span>
+        <span class="stat-label">Skills</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">✓</span>
+        <span class="stat-label">Certificate</span>
+      </div>
+    </div>
+    <div class="hero-btns">
+      <a href="register.html" class="btn-primary">⚡ Register Now</a>
+      <a href="#about" class="btn-secondary">Explore Program</a>
+      <button class="btn-google" onclick="googleSignIn()">
+        <img src="https://www.google.com/favicon.ico" alt="G"/>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-text">ELLECTRA 5-DAY INTERNSHIP</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-text">ELECTRONICS · IoT · PCB · 3D DESIGN · EMBEDDED SYSTEMS · AI WEB DEV</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-text">CERTIFICATE PROVIDED</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-text">FEE: ₹500 ONLY</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-text">WHATSAPP: 6381733447</span>
+    <span class="ticker-sep">◆</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-tag">// ABOUT THE PROGRAM</div>
+  <h2 class="section-title">About the Internship</h2>
+  <span class="section-line"></span>
+
+  <div class="about-grid reveal">
+    <div class="about-intro">
+      <p>
+        <strong>ELLECTRA 5-Day Internship Program</strong> is a practical hands-on training program designed for students interested in
+        <strong>Electronics, IoT, PCB Designing, 3D Designing, Embedded Systems,</strong> and <strong>AI-based Web Development.</strong>
+      </p>
+      <br/>
+      <p>
+        This internship focuses on real-time learning with live practical sessions, project building, and industry-oriented training. Students will gain both technical knowledge and practical experience by working with electronic components, sensors, PCB software, soldering tools, cloud platforms, and AI-assisted development tools.
+      </p>
+    </div>
+  </div>
+
+  <br/>
+
+  <div class="cards-grid">
+
+    <!-- Card 1: Learn -->
+    <div class="info-card reveal">
+      <div class="card-icon">📚</div>
+      <div class="card-title">You Will Learn</div>
+      <ul class="card-list">
+        <li>Electronics Fundamentals</li>
+        <li>Working of Sensors &amp; Modules</li>
+        <li>Soldering Techniques</li>
+        <li>PCB Designing</li>
+        <li>3D Designing</li>
+        <li>Embedded Systems Basics</li>
+        <li>AI-Based Web Development</li>
+        <li>Cloud Hosting</li>
+        <li>IoT Dashboard Concepts</li>
+        <li>Project Building &amp; Testing</li>
+      </ul>
+    </div>
+
+    <!-- Card 2: Highlights -->
+    <div class="info-card reveal">
+      <div class="card-icon">🏆</div>
+      <div class="card-title">Highlights</div>
+      <ul class="card-list">
+        <li>Hands-on Practical Sessions</li>
+        <li>Industry-Based Learning</li>
+        <li>Mini Project Development</li>
+        <li>Live Demonstrations</li>
+        <li>Beginner Friendly Training</li>
+        <li>Mobile Friendly Learning Resources</li>
+        <li>Real-Time Hardware Interaction</li>
+        <li>Guidance from Expert Mentors</li>
+        <li>Internship Certificate Provided</li>
+      </ul>
+    </div>
+
+    <!-- Card 3: Who Can Join -->
+    <div class="info-card reveal">
+      <div class="card-icon">🎓</div>
+      <div class="card-title">Who Can Join?</div>
+      <ul class="card-list">
+        <li>School Students</li>
+        <li>Diploma Students</li>
+        <li>Engineering Students</li>
+        <li>Beginners Interested in Electronics &amp; Technology</li>
+      </ul>
+      <br/>
+      <div class="card-title" style="margin-top:1rem">Duration</div>
+      <ul class="card-list">
+        <li>5 Days (Monday to Friday)</li>
+        <li>Intensive daily sessions</li>
+        <li>Hands-on every day</li>
+      </ul>
+    </div>
+
+    <!-- Card 4: Certificate & Fee -->
+    <div class="info-card reveal">
+      <div class="card-icon">📜</div>
+      <div class="card-title">Certificate &amp; Fee</div>
+      <ul class="card-list">
+        <li>Internship completion certificate after successful participation</li>
+        <li>Fee: ₹500 only — all materials included</li>
+        <li>No hidden charges</li>
+      </ul>
+      <br/>
+      <div class="card-title" style="margin-top:1rem">Contact</div>
+      <ul class="card-list">
+        <li>WhatsApp: 6381733447</li>
+        <li>Instant registration support</li>
+        <li>Queries answered same day</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <div class="section-tag">// 5-DAY ROADMAP</div>
+  <h2 class="section-title">Internship Schedule</h2>
+  <span class="section-line"></span>
+
+  <div class="schedule-grid">
+
+    <div class="day-card reveal">
+      <div class="day-num">
+        <span class="day-label">DAY</span>
+        <span class="day-number">01</span>
+      </div>
+      <div class="day-body">
+        <div class="day-name">Electronics Fundamentals &amp; Components</div>
+        <div class="day-topics">
+          <span class="topic-chip">Resistors</span>
+          <span class="topic-chip">Capacitors</span>
+          <span class="topic-chip">LEDs</span>
+          <span class="topic-chip">Transistors</span>
+          <span class="topic-chip">Breadboard Circuits</span>
+          <span class="topic-chip">Soldering Basics</span>
+          <span class="topic-chip">Multimeter Usage</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card reveal">
+      <div class="day-num">
+        <span class="day-label">DAY</span>
+        <span class="day-number">02</span>
+      </div>
+      <div class="day-body">
+        <div class="day-name">Sensors, Modules &amp; Embedded Systems</div>
+        <div class="day-topics">
+          <span class="topic-chip">Arduino/NodeMCU</span>
+          <span class="topic-chip">DHT11 Sensor</span>
+          <span class="topic-chip">Ultrasonic Sensor</span>
+          <span class="topic-chip">IR Module</span>
+          <span class="topic-chip">LCD Display</span>
+          <span class="topic-chip">Embedded C Basics</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card reveal">
+      <div class="day-num">
+        <span class="day-label">DAY</span>
+        <span class="day-number">03</span>
+      </div>
+      <div class="day-body">
+        <div class="day-name">PCB Designing &amp; 3D Modelling</div>
+        <div class="day-topics">
+          <span class="topic-chip">EasyEDA / KiCad</span>
+          <span class="topic-chip">Schematic Design</span>
+          <span class="topic-chip">PCB Layout</span>
+          <span class="topic-chip">Gerber Export</span>
+          <span class="topic-chip">Tinkercad 3D</span>
+          <span class="topic-chip">STL Files</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card reveal">
+      <div class="day-num">
+        <span class="day-label">DAY</span>
+        <span class="day-number">04</span>
+      </div>
+      <div class="day-body">
+        <div class="day-name">IoT &amp; Cloud Platforms</div>
+        <div class="day-topics">
+          <span class="topic-chip">WiFi Connectivity</span>
+          <span class="topic-chip">Blynk Platform</span>
+          <span class="topic-chip">Firebase IoT</span>
+          <span class="topic-chip">MQTT Basics</span>
+          <span class="topic-chip">IoT Dashboard</span>
+          <span class="topic-chip">Cloud Hosting</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card reveal">
+      <div class="day-num" style="background:linear-gradient(180deg,#b8860b,var(--gold))">
+        <span class="day-label" style="color:var(--black)">DAY</span>
+        <span class="day-number" style="color:var(--black)">05</span>
+      </div>
+      <div class="day-body">
+        <div class="day-name">AI-Based Web Development &amp; Project Demo</div>
+        <div class="day-topics">
+          <span class="topic-chip">HTML/CSS/JS</span>
+          <span class="topic-chip">AI Code Tools</span>
+          <span class="topic-chip">GitHub Pages</span>
+          <span class="topic-chip">Final Project</span>
+          <span class="topic-chip">Live Demo</span>
+          <span class="topic-chip">Certificate 🎓</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HIGHLIGHTS STRIP -->
+<section id="highlights" style="padding:3.5rem 1.5rem">
+  <div class="section-tag">// WHY CHOOSE US</div>
+  <h2 class="section-title">Program Highlights</h2>
+  <span class="section-line"></span>
+  <div class="highlights-strip">
+    <div class="hl-item reveal"><span class="hl-icon">🔧</span><span class="hl-text">Hands-on Practical Sessions</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">🏭</span><span class="hl-text">Industry-Based Learning</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">🛠️</span><span class="hl-text">Mini Project Development</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">📡</span><span class="hl-text">Live Demonstrations</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">🟢</span><span class="hl-text">Beginner Friendly Training</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">📱</span><span class="hl-text">Mobile Friendly Resources</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">⚡</span><span class="hl-text">Real-Time Hardware Interaction</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">👨‍🏫</span><span class="hl-text">Expert Mentor Guidance</span></div>
+    <div class="hl-item reveal"><span class="hl-icon">🎓</span><span class="hl-text">Internship Certificate</span></div>
+  </div>
+</section>
+
+<!-- WHO CAN JOIN -->
+<section id="who" style="background:var(--dark2)">
+  <div class="section-tag">// ELIGIBILITY</div>
+  <h2 class="section-title">Who Can Join?</h2>
+  <span class="section-line"></span>
+  <div class="who-grid">
+    <div class="who-card reveal"><span class="who-icon">🏫</span><span class="who-label">School Students</span></div>
+    <div class="who-card reveal"><span class="who-icon">🎒</span><span class="who-label">Diploma Students</span></div>
+    <div class="who-card reveal"><span class="who-icon">🎓</span><span class="who-label">Engineering Students</span></div>
+    <div class="who-card reveal"><span class="who-icon">⚡</span><span class="who-label">Electronics Beginners</span></div>
+  </div>
+</section>
+
+<!-- FEE SECTION -->
+<section id="fee">
+  <div class="section-tag">// INVESTMENT</div>
+  <h2 class="section-title">Internship Fee</h2>
+  <span class="section-line"></span>
+  <div class="fee-box reveal">
+    <div class="fee-label">Total Fee</div>
+    <div class="fee-amount">₹500</div>
+    <div class="fee-label">All Inclusive · No Hidden Charges</div>
+    <div class="fee-duration">⏱ 5 DAYS · MON – FRI</div>
+    <p class="fee-cert">
+      📜 Internship completion certificate will be provided after successful participation.<br/>
+      All learning materials &amp; components included.
+    </p>
+    <a href="register.html" class="btn-primary" style="margin-top:1.8rem;display:inline-flex">⚡ Enroll Now for ₹500</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-tag">// GET IN TOUCH</div>
+  <h2 class="section-title">Contact Us</h2>
+  <span class="section-line"></span>
+  <div class="contact-box reveal">
+    <p style="color:var(--text-dim);font-size:1rem;margin-bottom:0.5rem">Have questions? Reach us instantly on WhatsApp.</p>
+    <p style="color:var(--gold);font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:700;letter-spacing:3px">6381733447</p>
+    <a href="https://wa.me/916381733447?text=Hi%2C%20I'm%20interested%20in%20ELLECTRA%20Internship"
+       target="_blank" class="wa-btn">
+      <span class="wa-icon">💬</span> Chat on WhatsApp
+    </a>
+    <br/><br/>
+    <a href="register.html" class="btn-primary" style="margin-top:0.5rem">⚡ Register for Internship</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">⚡ ELLECTRA</div>
+  <p class="footer-sub">5-Day Internship Program · Electronics · IoT · AI Development</p>
+  <p style="color:var(--text-dim);font-size:0.75rem;margin-top:1rem;letter-spacing:1px">WhatsApp: 6381733447 · Fee: ₹500</p>
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+<a href="https://wa.me/916381733447?text=Hi%2C%20I'm%20interested%20in%20ELLECTRA%20Internship"
+   target="_blank" class="wa-float" title="Chat on WhatsApp">💬</a>
+
+<script type="module">
+  import { signInWithGoogle, onAuthChange } from './firebase.js';
+
+  // ── Google Sign-In ──────────────────────────────────────────────────────────
+  window.googleSignIn = async () => {
+    try {
+      const result = await signInWithGoogle();
+      const user   = result.user;
+      alert(`✅ Signed in as ${user.displayName}! Redirecting to register...`);
+      window.location.href = 'register.html';
+    } catch (err) {
+      console.error(err);
+      alert('Sign-in failed: ' + err.message);
+    }
+  };
+
+  // ── Auth state ──────────────────────────────────────────────────────────────
+  onAuthChange(user => {
+    const gBtn = document.querySelector('.btn-google');
+    if (gBtn) {
+      if (user) {
+        gBtn.innerHTML = `<img src="https://www.google.com/favicon.ico" alt="G"/> ${user.displayName || 'Signed In'}`;
+      }
+    }
+  });
+</script>
+
+<script>
+  // ── Hamburger ──────────────────────────────────────────────────────────────
+  function toggleMenu() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // ── Navbar scroll ──────────────────────────────────────────────────────────
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.style.background = window.scrollY > 60
+      ? 'rgba(5,5,5,0.97)' : 'rgba(5,5,5,0.85)';
+  });
+
+  // ── Reveal on scroll ──────────────────────────────────────────────────────
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
