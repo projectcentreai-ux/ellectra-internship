@@ -160,18 +160,31 @@ body{font-family:'Rajdhani',sans-serif;background:#ffffff;color:var(--text);over
 
 /* ── TABLE ─────────────────────────────────────────────────────────────────── */
 .table-wrap{padding:0 1.5rem 2rem;overflow-x:auto}
-.reg-table{width:100%;border-collapse:collapse;min-width:900px}
+.reg-table{width:100%;border-collapse:collapse;min-width:1060px;table-layout:fixed}
+.reg-table col.c-num    {width:40px}
+.reg-table col.c-name   {width:155px}
+.reg-table col.c-dept   {width:110px}
+.reg-table col.c-year   {width:125px}
+.reg-table col.c-phone  {width:108px}
+.reg-table col.c-email  {width:175px}
+.reg-table col.c-city   {width:80px}
+.reg-table col.c-status {width:96px}
+.reg-table col.c-shot   {width:72px}
+.reg-table col.c-date   {width:108px}
+.reg-table col.c-act    {width:auto}
 .reg-table th{
-  text-align:left;padding:0.7rem 1rem;
+  text-align:left;padding:0.7rem 0.75rem;
   font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:2px;
   color:var(--text-dim);text-transform:uppercase;
   border-bottom:1px solid rgba(255,215,0,0.12);
   background:var(--dark2);position:sticky;top:60px;z-index:10;
+  white-space:nowrap;overflow:hidden;
 }
 .reg-table td{
-  padding:0.85rem 1rem;border-bottom:1px solid rgba(0,0,0,0.06);
+  padding:0.85rem 0.75rem;border-bottom:1px solid rgba(0,0,0,0.06);
   font-size:0.88rem;color:var(--text);vertical-align:middle;
   transition:background 0.15s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .reg-table tr:hover td{background:rgba(212,168,0,0.05)}
 .reg-table tr.new-row td{animation:row-in 0.5s ease}
@@ -193,11 +206,11 @@ body{font-family:'Rajdhani',sans-serif;background:#ffffff;color:var(--text);over
 .badge.rejected{background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.3);color:var(--red)}
 
 /* Action buttons */
-.act-group{display:flex;gap:0.4rem;flex-wrap:wrap}
+.act-group{display:flex;gap:0.35rem;flex-wrap:nowrap;align-items:center}
 .act-btn{
-  border:none;padding:0.3rem 0.7rem;cursor:pointer;
-  font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:1px;
-  transition:all 0.2s;
+  border:none;padding:0.28rem 0.6rem;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:1px;
+  transition:all 0.2s;white-space:nowrap;flex-shrink:0;
   clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);
 }
 .act-btn.verify{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:var(--green)}
@@ -371,6 +384,19 @@ body{font-family:'Rajdhani',sans-serif;background:#ffffff;color:var(--text);over
   <!-- Registrations Table -->
   <div class="table-wrap">
     <table class="reg-table" id="reg-table">
+      <colgroup>
+        <col class="c-num"/>
+        <col class="c-name"/>
+        <col class="c-dept"/>
+        <col class="c-year"/>
+        <col class="c-phone"/>
+        <col class="c-email"/>
+        <col class="c-city"/>
+        <col class="c-status"/>
+        <col class="c-shot"/>
+        <col class="c-date"/>
+        <col class="c-act"/>
+      </colgroup>
       <thead>
         <tr>
           <th>#</th>
