@@ -119,7 +119,72 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .wa-float{position:fixed;bottom:1.8rem;right:1.5rem;z-index:200;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5rem;box-shadow:0 4px 20px rgba(37,211,102,0.4);animation:wa-bounce 2.5s ease-in-out infinite}
 @keyframes wa-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 
-@media(max-width:600px){.page-wrap{padding:5rem 1rem 3rem}}
+/* ══ MOBILE ══ */
+@media(max-width:768px){
+  /* nav */
+  nav{padding:0.55rem 1rem}
+  .nav-logo img{height:28px}
+  .nav-brand{font-size:0.78rem;letter-spacing:1px}
+  .back-btn{font-size:0.8rem}
+
+  /* page wrap */
+  .page-wrap{padding:4.5rem 0.9rem 2.5rem}
+
+  /* titles */
+  .reg-title{font-size:1.5rem;letter-spacing:2px}
+  .reg-sub{font-size:0.62rem;letter-spacing:2px}
+
+  /* auth wall */
+  #auth-wall{padding:1.8rem 1.2rem;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+  #auth-wall h2{font-size:0.85rem;letter-spacing:1.5px}
+  #auth-wall p{font-size:0.85rem;margin-bottom:1.2rem}
+  .btn-google-large{font-size:0.95rem;padding:0.85rem 1rem}
+
+  /* user info chip */
+  .user-info{padding:0.6rem 0.9rem;gap:0.6rem}
+  .user-avatar{width:32px;height:32px}
+  .user-name{font-size:0.65rem}
+  .user-email{font-size:0.72rem}
+
+  /* payment QR */
+  #payment-section{padding:1.4rem 1.2rem;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+  .qr-title{font-size:0.78rem;letter-spacing:1.5px}
+  .qr-amount{font-size:1.4rem}
+  .qr-img{max-width:170px}
+  .qr-info{font-size:0.82rem}
+
+  /* form */
+  .form-box{padding:1.5rem 1.1rem;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+  .form-title{font-size:0.75rem;letter-spacing:1.5px;margin-bottom:1.1rem}
+  .form-row{margin-bottom:1rem}
+  .form-row label{font-size:0.68rem;letter-spacing:1.5px}
+  .form-row input,.form-row select{
+    font-size:0.95rem;padding:0.7rem 0.85rem;
+    clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);
+    /* prevent iOS zoom on focus */
+    font-size:16px;
+  }
+  .upload-area{padding:1.2rem 0.8rem}
+  .upload-icon{font-size:1.6rem}
+  .upload-label{font-size:0.8rem}
+  .submit-btn{padding:0.9rem;font-size:0.75rem;letter-spacing:1.5px}
+
+  /* popup */
+  .popup-box{
+    padding:1.8rem 1.2rem;
+    clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+  }
+  .popup-icon{font-size:2.8rem}
+  .popup-title{font-size:0.9rem;letter-spacing:2px}
+  .popup-msg{font-size:0.82rem;margin-bottom:1.2rem}
+  .popup-close{font-size:0.7rem;padding:0.7rem 1.5rem}
+
+  /* error */
+  .error-box{font-size:0.8rem}
+
+  /* wa float */
+  .wa-float{width:48px;height:48px;font-size:1.3rem;bottom:1rem;right:0.9rem}
+}
 </style>
 </head>
 <body>
@@ -265,75 +330,110 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 <script type="module">
   import {
-    signInWithGoogle, onAuthChange, logOut,
-    addRegistration, uploadPaymentScreenshot, auth
+    signInWithGoogle, onAuthChange,
+    addRegistration, auth
   } from './firebase.js';
 
-  let currentUser = null;
+  // ── ImgBB config ────────────────────────────────────────────────────────────
+  const IMGBB_API_KEY = 'bb aab2a9f0f54e743cdf7b36df942e43e1'.replace(/\s/g,'');
+  // ImgBB free tier: 32 MB/image, unlimited uploads, direct image URL returned
+
+  let currentUser   = null;
   let screenshotFile = null;
 
-  // ── Auth state ──────────────────────────────────────────────────────────────
+  // ── Upload screenshot to ImgBB ───────────────────────────────────────────────
+  async function uploadToImgBB(file) {
+    // Convert file → base64 (strip data:...;base64, prefix)
+    const base64 = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload  = () => res(r.result.split(',')[1]);
+      r.onerror = () => rej(new Error('File read failed'));
+      r.readAsDataURL(file);
+    });
+
+    const form = new FormData();
+    form.append('key',   IMGBB_API_KEY);
+    form.append('image', base64);
+    form.append('name',  `payment_${Date.now()}`);
+
+    const res  = await fetch('https://api.imgbb.com/1/upload', { method:'POST', body: form });
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.error?.message || 'ImgBB upload failed');
+
+    // Return both viewer URL and direct image URL
+    return {
+      viewerUrl : data.data.url_viewer,   // page with delete options
+      directUrl : data.data.url,          // direct .jpg/.png link (for admin preview)
+      thumbUrl  : data.data.thumb?.url,   // small thumbnail
+      deleteUrl : data.data.delete_url,   // to delete if fraud
+    };
+  }
+
+  // ── Auth state ───────────────────────────────────────────────────────────────
   onAuthChange(user => {
     currentUser = user;
     if (user) {
-      // Show user info
       document.getElementById('user-info').style.display = 'flex';
       const av = document.getElementById('user-avatar');
-      if (user.photoURL) av.src = user.photoURL;
-      else av.style.display = 'none';
-      document.getElementById('user-name-disp').textContent = user.displayName || 'User';
+      if (user.photoURL) av.src = user.photoURL; else av.style.display = 'none';
+      document.getElementById('user-name-disp').textContent  = user.displayName || 'User';
       document.getElementById('user-email-disp').textContent = user.email || '';
 
-      // Change button text
       const gBtn = document.querySelector('.btn-google-large');
       gBtn.innerHTML = `<img src="https://www.google.com/favicon.ico" alt="G"/> Signed in · Continue`;
 
-      // Pre-fill email
       const emailField = document.getElementById('f-email');
-      if (emailField && user.email) emailField.value = user.email;
+      if (emailField && user.email)        emailField.value = user.email;
       if (document.getElementById('f-name') && user.displayName)
         document.getElementById('f-name').value = user.displayName;
 
-      // Show payment + form
-      document.getElementById('payment-section').style.display = 'block';
+      document.getElementById('payment-section').style.display  = 'block';
       document.getElementById('reg-form-section').style.display = 'block';
     }
   });
 
-  // ── Google Sign-In ──────────────────────────────────────────────────────────
+  // ── Google Sign-In ───────────────────────────────────────────────────────────
   window.doGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-    } catch (err) {
-      alert('Sign-in failed: ' + err.message);
-    }
+    try { await signInWithGoogle(); }
+    catch (err) { alert('Sign-in failed: ' + err.message); }
   };
 
-  // ── File preview ────────────────────────────────────────────────────────────
+  // ── File preview ─────────────────────────────────────────────────────────────
   window.previewFile = (input) => {
     screenshotFile = input.files[0];
     if (!screenshotFile) return;
+
+    // 5 MB guard
+    if (screenshotFile.size > 5 * 1024 * 1024) {
+      showError('Image too large. Please upload under 5 MB.');
+      screenshotFile = null;
+      input.value = '';
+      return;
+    }
+
     const preview = document.getElementById('preview-img');
     const reader  = new FileReader();
-    reader.onload  = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
     reader.readAsDataURL(screenshotFile);
-    document.querySelector('.upload-label').textContent = `✅ ${screenshotFile.name}`;
+    document.querySelector('.upload-label').innerHTML =
+      `✅ <strong style="color:var(--gold)">${screenshotFile.name}</strong><br/>
+       <small style="color:rgba(255,255,255,0.35)">${(screenshotFile.size/1024).toFixed(0)} KB · ready to upload</small>`;
   };
 
-  // ── Form submit ─────────────────────────────────────────────────────────────
+  // ── Form submit ──────────────────────────────────────────────────────────────
   window.submitForm = async () => {
-    const errBox = document.getElementById('form-error');
-    errBox.style.display = 'none';
+    document.getElementById('form-error').style.display = 'none';
 
-    if (!currentUser) { showError('Please sign in with Google first.'); return; }
+    if (!currentUser)    return showError('Please sign in with Google first.');
 
-    const name   = document.getElementById('f-name').value.trim();
-    const college= document.getElementById('f-college').value.trim();
-    const dept   = document.getElementById('f-dept').value.trim();
-    const year   = document.getElementById('f-year').value;
-    const phone  = document.getElementById('f-phone').value.trim();
-    const email  = document.getElementById('f-email').value.trim();
-    const city   = document.getElementById('f-city').value.trim();
+    const name    = document.getElementById('f-name').value.trim();
+    const college = document.getElementById('f-college').value.trim();
+    const dept    = document.getElementById('f-dept').value.trim();
+    const year    = document.getElementById('f-year').value;
+    const phone   = document.getElementById('f-phone').value.trim();
+    const email   = document.getElementById('f-email').value.trim();
+    const city    = document.getElementById('f-city').value.trim();
 
     if (!name||!college||!dept||!year||!phone||!email||!city)
       return showError('Please fill all required fields.');
@@ -343,45 +443,63 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
       return showError('Please upload your payment screenshot.');
 
     setLoading(true);
+    setStatus('📤 Uploading payment screenshot…');
+
     try {
-      const screenshotURL = await uploadPaymentScreenshot(screenshotFile, currentUser.uid);
+      // 1 — Upload image to ImgBB
+      const imgData = await uploadToImgBB(screenshotFile);
+      setStatus('💾 Saving registration…');
+
+      // 2 — Save everything to Firestore (directUrl used in admin dashboard)
       await addRegistration({
-        uid: currentUser.uid,
-        name, college, department: dept,
+        uid          : currentUser.uid,
+        name, college,
+        department   : dept,
         year, phone, email, city,
-        screenshotURL,
-        googleName: currentUser.displayName,
-        googleEmail: currentUser.email,
+        screenshotURL : imgData.directUrl,
+        screenshotThumb: imgData.thumbUrl  || imgData.directUrl,
+        screenshotViewer: imgData.viewerUrl,
+        screenshotDelete: imgData.deleteUrl,
+        uploadedVia  : 'imgbb',
+        googleName   : currentUser.displayName,
+        googleEmail  : currentUser.email,
       });
+
+      setStatus('');
       document.getElementById('success-popup').classList.add('active');
     } catch (err) {
       console.error(err);
       showError('Registration failed: ' + err.message);
+      setStatus('');
     } finally {
       setLoading(false);
     }
   };
 
-  window.closePopup = () => {
-    window.location.href = 'index.html';
-  };
+  window.closePopup = () => { window.location.href = 'index.html'; };
 
   function showError(msg) {
     const b = document.getElementById('form-error');
-    b.textContent = msg;
+    b.textContent  = msg;
     b.style.display = 'block';
+    b.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function setStatus(msg) {
+    const lbl = document.getElementById('btn-label');
+    if (lbl) lbl.textContent = msg || '⚡ SUBMIT REGISTRATION';
   }
 
   function setLoading(on) {
     const btn = document.getElementById('submit-btn');
     const lbl = document.getElementById('btn-label');
     const spn = document.getElementById('btn-spinner');
-    btn.disabled = on;
-    lbl.style.display = on ? 'none' : 'block';
-    spn.style.display = on ? 'block' : 'none';
+    btn.disabled       = on;
+    lbl.style.display  = on ? 'none' : 'block';
+    spn.style.display  = on ? 'block' : 'none';
   }
 
-  // ── Drag & drop ─────────────────────────────────────────────────────────────
+  // ── Drag & drop ──────────────────────────────────────────────────────────────
   const ua = document.getElementById('upload-area');
   if (ua) {
     ua.addEventListener('dragover', e => { e.preventDefault(); ua.classList.add('dragover'); });
