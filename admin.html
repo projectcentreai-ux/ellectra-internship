@@ -288,12 +288,24 @@ body{font-family:'Rajdhani',sans-serif;background:#ffffff;color:var(--text);over
 </head>
 <body>
 
+<!-- Debug bar (hidden until error/info) -->
+<div id="debug-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  padding:8px 16px;font-family:monospace;font-size:12px;color:#fff;text-align:center;
+  background:#1a1a00;border-top:1px solid #FFD700;word-break:break-all"></div>
+
 <!-- ── LOGIN SCREEN ──────────────────────────────────────────────────────────── -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
       <div class="brand">⚡ ELLECTRA</div>
       <div class="sub">// ADMIN PANEL ACCESS</div>
+    </div>
+    <!-- Config notice — remove after pasting Firebase config -->
+    <div id="config-notice" style="background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);
+      color:#E63946;padding:0.6rem 0.8rem;margin-bottom:1rem;font-family:monospace;font-size:0.68rem;
+      line-height:1.6;display:none">
+      ⚠ Firebase config not set.<br/>
+      Open admin.html, find <code>firebaseConfig</code> near the top of the &lt;script&gt; and paste your project values.
     </div>
     <label class="login-label">Admin Email</label>
     <input class="login-input" id="adm-email" type="email" placeholder="admin@email.com" autocomplete="email"/>
@@ -394,12 +406,86 @@ body{font-family:'Rajdhani',sans-serif;background:#ffffff;color:var(--text);over
 <!-- ── TOAST ───────────────────────────────────────────────────────────────────── -->
 <div id="toast"></div>
 
+<!-- Firebase SDK (inline - no external firebase.js needed) -->
 <script type="module">
-import {
-  signInAdmin, logOut, onAuthChange,
-  listenRegistrations, updateRegistrationStatus,
-  auth
-} from './firebase.js';
+// ── Inline Firebase SDK ───────────────────────────────────────────────────────
+import { initializeApp, getApps }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────────
+// Get this from Firebase Console → Project Settings → Your apps → SDK setup
+const firebaseConfig = {
+  apiKey:            window.__FB_API_KEY__            || "PASTE_API_KEY",
+  authDomain:        window.__FB_AUTH_DOMAIN__        || "PASTE_AUTH_DOMAIN",
+  projectId:         window.__FB_PROJECT_ID__         || "PASTE_PROJECT_ID",
+  storageBucket:     window.__FB_STORAGE_BUCKET__     || "PASTE_STORAGE_BUCKET",
+  messagingSenderId: window.__FB_MESSAGING_SENDER_ID__|| "PASTE_MESSAGING_SENDER_ID",
+  appId:             window.__FB_APP_ID__             || "PASTE_APP_ID",
+};
+
+// Prevent double-init on hot reload
+const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── Debug helper (shows errors in the page, not just console) ─────────────────
+function dbgLog(msg, type='info') {
+  const el = document.getElementById('debug-bar');
+  if (!el) return;
+  el.style.display = 'block';
+  el.style.background = type === 'error' ? '#B00020' : type === 'ok' ? '#166534' : '#1a1a00';
+  el.textContent = '🔍 ' + msg;
+  console[type === 'error' ? 'error' : 'log']('[AdminDebug]', msg);
+}
+
+// ── Shim functions (replaces firebase.js imports) ────────────────────────────
+const signInAdmin = (email, pass) => signInWithEmailAndPassword(auth, email, pass);
+const logOut      = () => signOut(auth);
+const onAuthChange = (cb) => onAuthStateChanged(auth, cb);
+
+// ── COLLECTION NAME — must match what register.html writes to ─────────────────
+const COLLECTION = 'registrations';   // ← change if your collection is named differently
+
+const listenRegistrations = (cb) => {
+  dbgLog('Connecting to Firestore: ' + COLLECTION);
+  // Try ordered first; fallback to unordered if index missing
+  const tryListen = (ordered) => {
+    const q = ordered
+      ? query(collection(db, COLLECTION), orderBy('createdAt', 'desc'))
+      : collection(db, COLLECTION);
+    return onSnapshot(q,
+      snap => {
+        let regs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Fallback sort if createdAt present
+        if (!ordered) regs.sort((a,b) => {
+          const ta = a.createdAt?.seconds || 0;
+          const tb = b.createdAt?.seconds || 0;
+          return tb - ta;
+        });
+        // Ensure status field exists
+        regs = regs.map(r => ({ status: 'pending', ...r }));
+        dbgLog('✓ Loaded ' + regs.length + ' registrations', 'ok');
+        cb(regs);
+      },
+      err => {
+        if (ordered && (err.code === 'failed-precondition' || err.code === 'unimplemented')) {
+          dbgLog('Index missing — retrying without orderBy…');
+          tryListen(false);
+        } else {
+          dbgLog('Firestore error: ' + err.code + ' — ' + err.message, 'error');
+          console.error(err);
+        }
+      }
+    );
+  };
+  return tryListen(true);
+};
+
+const updateRegistrationStatus = (id, status) =>
+  updateDoc(doc(db, COLLECTION, id), { status, updatedAt: serverTimestamp() });
 
 // ── State ────────────────────────────────────────────────────────────────────
 let allRegs      = [];
@@ -446,6 +532,12 @@ window.doLogout = async () => {
 };
 
 // Allow Enter key in password field
+// Show config warning if still placeholder
+if (firebaseConfig.apiKey === 'PASTE_API_KEY') {
+  const n = document.getElementById('config-notice');
+  if (n) n.style.display = 'block';
+}
+
 document.getElementById('adm-pass').addEventListener('keydown', e => {
   if (e.key === 'Enter') window.doAdminLogin();
 });
@@ -640,8 +732,11 @@ function esc(str) {
 
 function fmtDate(ts) {
   if (!ts) return '—';
-  const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
-  return d.toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' });
+  try {
+    const d = ts.toDate ? ts.toDate() : ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' });
+  } catch(e) { return '—'; }
 }
 
 function statusIcon(s) {
