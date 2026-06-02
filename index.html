@@ -588,6 +588,139 @@ footer{
 }
 .tvid-desc{color:var(--text-dim);font-size:0.88rem;line-height:1.65;font-weight:400}
 
+/* ── ABOUT VIDEO AD STRIP ── */
+.about-vid-strip{
+  max-width:1100px;margin:3rem auto 0;
+}
+.avs-label{
+  display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;
+}
+.avs-tag{
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--red);letter-spacing:3px;white-space:nowrap;
+  background:rgba(230,57,70,0.08);border:1px solid rgba(230,57,70,0.3);
+  padding:0.3rem 0.8rem;
+  clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+}
+.avs-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(230,57,70,0.4),transparent)}
+
+.avs-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.2rem;
+}
+
+/* individual card */
+.avs-card{
+  background:var(--dark3);
+  border:1px solid rgba(255,215,0,0.1);
+  overflow:hidden;
+  cursor:pointer;
+  transition:all 0.4s ease;
+  position:relative;
+}
+.avs-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,215,0,0.03),transparent 60%);
+  opacity:0;transition:opacity 0.35s;pointer-events:none;
+}
+.avs-card:hover{
+  border-color:rgba(255,215,0,0.38);
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(255,215,0,0.12),0 0 0 1px rgba(255,215,0,0.1);
+}
+.avs-card:hover::after{opacity:1}
+
+/* video thumbnail area */
+.avs-thumb{
+  position:relative;width:100%;
+  aspect-ratio:16/9;overflow:hidden;background:#000;
+}
+.avs-thumb video{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 0.5s ease;
+}
+.avs-card:hover .avs-thumb video{transform:scale(1.05)}
+
+/* dark overlay + play button */
+.avs-overlay{
+  position:absolute;inset:0;z-index:2;
+  background:linear-gradient(180deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.55) 100%);
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.3s;
+}
+.avs-card:hover .avs-overlay{background:linear-gradient(180deg,rgba(0,0,0,0.02) 0%,rgba(0,0,0,0.25) 100%)}
+
+.avs-play{
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(255,215,0,0.14);
+  border:2px solid rgba(255,215,0,0.55);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;color:#fff;
+  backdrop-filter:blur(6px);
+  transition:all 0.3s;
+  box-shadow:0 0 20px rgba(255,215,0,0.15);
+}
+.avs-card:hover .avs-play{
+  background:rgba(255,215,0,0.25);
+  border-color:var(--gold);
+  transform:scale(1.12);
+  box-shadow:0 0 30px rgba(255,215,0,0.35);
+}
+.avs-play.paused{background:rgba(230,57,70,0.2);border-color:var(--red);color:#fff}
+
+/* animated scan line on hover */
+.avs-scan{
+  position:absolute;left:0;right:0;height:1px;top:0;
+  background:linear-gradient(90deg,transparent,rgba(255,215,0,0.6),transparent);
+  opacity:0;pointer-events:none;
+}
+.avs-card:hover .avs-scan{
+  animation:avs-scan-move 1.8s linear infinite;opacity:1;
+}
+@keyframes avs-scan-move{
+  0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}
+}
+
+/* HUD corner brackets */
+.avs-corner{position:absolute;width:12px;height:12px;z-index:3}
+.avs-tl{top:6px;left:6px;border-top:2px solid var(--gold);border-left:2px solid var(--gold)}
+.avs-tr{top:6px;right:6px;border-top:2px solid var(--gold);border-right:2px solid var(--gold)}
+.avs-bl{bottom:6px;left:6px;border-bottom:2px solid var(--gold);border-left:2px solid var(--gold)}
+.avs-br{bottom:6px;right:6px;border-bottom:2px solid var(--gold);border-right:2px solid var(--gold)}
+
+/* text info below thumb */
+.avs-info{
+  padding:0.9rem 1rem 1rem;
+  border-top:1px solid rgba(255,215,0,0.08);
+  background:linear-gradient(180deg,rgba(255,215,0,0.02),transparent);
+}
+.avs-chip{
+  display:inline-block;
+  font-family:'Share Tech Mono',monospace;font-size:0.6rem;
+  color:var(--red);letter-spacing:2.5px;
+  background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.28);
+  padding:0.15rem 0.5rem;margin-bottom:0.5rem;
+  clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);
+}
+.avs-title{
+  font-family:'Orbitron',monospace;font-size:0.8rem;font-weight:700;
+  color:var(--gold);letter-spacing:1.5px;margin-bottom:0.25rem;
+}
+.avs-sub{
+  font-size:0.75rem;color:var(--text-dim);
+  font-family:'Rajdhani',sans-serif;font-weight:400;letter-spacing:0.5px;
+}
+
+/* mobile: stack to 1 col */
+@media(max-width:768px){
+  .avs-grid{grid-template-columns:1fr}
+}
+@media(min-width:769px) and (max-width:1023px){
+  .avs-grid{grid-template-columns:repeat(2,1fr)}
+  .avs-grid .avs-card:last-child{grid-column:span 2}
+}
+
 /* ── MOBILE NAV ── */
 @media(max-width:768px){
   .nav-links{
@@ -819,6 +952,84 @@ footer{
     </div>
 
   </div>
+
+  <!-- ── IN-SECTION VIDEO AD STRIP ── -->
+  <div class="about-vid-strip reveal">
+    <div class="avs-label">
+      <span class="avs-tag">▶ WATCH LIVE SESSIONS</span>
+      <span class="avs-line"></span>
+    </div>
+    <div class="avs-grid">
+
+      <!-- 3D Printing -->
+      <div class="avs-card" onclick="toggleAboutVideo(this)">
+        <div class="avs-thumb">
+          <video muted loop preload="none"
+                 data-src="https://raw.githubusercontent.com/projectcentreai-ux/ellectra-internship/main/3D%20printing%20video.mp4">
+          </video>
+          <div class="avs-overlay">
+            <div class="avs-play">▶</div>
+            <div class="avs-scan"></div>
+          </div>
+          <div class="avs-corner avs-tl"></div>
+          <div class="avs-corner avs-tr"></div>
+          <div class="avs-corner avs-bl"></div>
+          <div class="avs-corner avs-br"></div>
+        </div>
+        <div class="avs-info">
+          <div class="avs-chip">🖨 3D PRINTING</div>
+          <div class="avs-title">3D Design &amp; Printing</div>
+          <div class="avs-sub">Tinkercad · STL Export · Real Hardware</div>
+        </div>
+      </div>
+
+      <!-- PCB Design -->
+      <div class="avs-card" onclick="toggleAboutVideo(this)">
+        <div class="avs-thumb">
+          <video muted loop preload="none"
+                 data-src="https://raw.githubusercontent.com/projectcentreai-ux/ellectra-internship/main/pcb%20design%20video.mp4">
+          </video>
+          <div class="avs-overlay">
+            <div class="avs-play">▶</div>
+            <div class="avs-scan"></div>
+          </div>
+          <div class="avs-corner avs-tl"></div>
+          <div class="avs-corner avs-tr"></div>
+          <div class="avs-corner avs-bl"></div>
+          <div class="avs-corner avs-br"></div>
+        </div>
+        <div class="avs-info">
+          <div class="avs-chip">🔲 PCB DESIGN</div>
+          <div class="avs-title">PCB Designing</div>
+          <div class="avs-sub">EasyEDA · KiCad · Gerber Files</div>
+        </div>
+      </div>
+
+      <!-- Web Development -->
+      <div class="avs-card" onclick="toggleAboutVideo(this)">
+        <div class="avs-thumb">
+          <video muted loop preload="none"
+                 data-src="https://raw.githubusercontent.com/projectcentreai-ux/ellectra-internship/main/web%20designing.mp4">
+          </video>
+          <div class="avs-overlay">
+            <div class="avs-play">▶</div>
+            <div class="avs-scan"></div>
+          </div>
+          <div class="avs-corner avs-tl"></div>
+          <div class="avs-corner avs-tr"></div>
+          <div class="avs-corner avs-bl"></div>
+          <div class="avs-corner avs-br"></div>
+        </div>
+        <div class="avs-info">
+          <div class="avs-chip">🌐 WEB DEV</div>
+          <div class="avs-title">AI Web Development</div>
+          <div class="avs-sub">HTML · CSS · JS · GitHub Pages</div>
+        </div>
+      </div>
+
+    </div><!-- /avs-grid -->
+  </div><!-- /about-vid-strip -->
+
 </section>
 
 <!-- SCHEDULE -->
@@ -1231,6 +1442,43 @@ footer{
       vid.pause();
       btn.textContent = '▶';
       btn.classList.remove('playing');
+    }
+  };
+
+  // ── ABOUT STRIP VIDEO TOGGLE ───────────────────────────────────────────────
+  // Lazy-load about strip videos
+  const avsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const vid = entry.target.querySelector('video[data-src]');
+        if (vid && !vid.src) { vid.src = vid.dataset.src; vid.load(); }
+        avsObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.avs-card').forEach(c => avsObserver.observe(c));
+
+  window.toggleAboutVideo = function(card) {
+    const vid = card.querySelector('video');
+    const btn = card.querySelector('.avs-play');
+    if (!vid.src && vid.dataset.src) { vid.src = vid.dataset.src; vid.load(); }
+    if (vid.paused) {
+      // Pause all other about-strip and topic-section videos
+      document.querySelectorAll('.avs-card video, .tvid-wrap video').forEach(v => {
+        if (v !== vid) {
+          v.pause();
+          const pb = v.closest('.avs-card')?.querySelector('.avs-play') ||
+                     v.closest('.tvid-wrap')?.querySelector('.play-btn');
+          if (pb) { pb.textContent = '▶'; pb.classList.remove('paused','playing'); }
+        }
+      });
+      vid.play();
+      btn.textContent = '⏸';
+      btn.classList.add('paused');
+    } else {
+      vid.pause();
+      btn.textContent = '▶';
+      btn.classList.remove('paused');
     }
   };
 </script>
