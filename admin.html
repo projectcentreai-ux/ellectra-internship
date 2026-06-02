@@ -9,21 +9,21 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --gold:#FFD700;--amber:#FFA500;--red:#E63946;--red-dark:#B00020;
-  --green:#22C55E;--green-dark:#166534;--blue:#3B82F6;
-  --black:#050505;--dark:#0A0A0A;--dark2:#111111;--dark3:#1A1A1A;--dark4:#222;
-  --glass:rgba(255,215,0,0.06);--glass-border:rgba(255,215,0,0.18);
-  --text:#F0F0F0;--text-dim:#999;
+  --gold:#D4A800;--amber:#E67E00;--red:#E63946;--red-dark:#B00020;
+  --green:#16A34A;--green-dark:#166534;--blue:#2563EB;
+  --black:#ffffff;--dark:#f8f8f8;--dark2:#f0f0f0;--dark3:#e8e8e8;--dark4:#e0e0e0;
+  --glass:rgba(212,168,0,0.07);--glass-border:rgba(212,168,0,0.3);
+  --text:#1a1a1a;--text-dim:#666;
 }
-html{scroll-behavior:smooth}
-body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--text);overflow-x:hidden;min-height:100vh}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--black)}::-webkit-scrollbar-thumb{background:var(--gold)}
+html{scroll-behavior:smooth;background:#ffffff}
+body{font-family:'Rajdhani',sans-serif;background:#ffffff;color:var(--text);overflow-x:hidden;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#f0f0f0}::-webkit-scrollbar-thumb{background:var(--gold)}
 
 /* ── LOGIN SCREEN ──────────────────────────────────────────────────────────── */
 #login-screen{
   position:fixed;inset:0;z-index:1000;
   display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.08) 0%, var(--black) 70%);
+  background:radial-gradient(ellipse at 50% 0%, rgba(212,168,0,0.08) 0%, #ffffff 70%);
   padding:1.5rem;
 }
 .login-box{
@@ -40,17 +40,17 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--text)
 .login-logo .sub{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--red);letter-spacing:3px;margin-top:0.3rem}
 .login-label{font-size:0.72rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:0.4rem;display:block}
 .login-input{
-  width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,215,0,0.15);
+  width:100%;background:#f5f5f5;border:1px solid rgba(212,168,0,0.4);
   color:var(--text);padding:0.75rem 1rem;
   font-family:'Rajdhani',sans-serif;font-size:1rem;outline:none;
   transition:border-color 0.2s;margin-bottom:1.1rem;
   clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
 }
 .login-input:focus{border-color:var(--gold)}
-.login-input::placeholder{color:rgba(255,255,255,0.2)}
+.login-input::placeholder{color:#aaa}
 .login-btn{
   width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));
-  color:var(--black);border:none;padding:0.9rem;
+  color:#ffffff;border:none;padding:0.9rem;
   font-family:'Orbitron',monospace;font-size:0.8rem;font-weight:700;
   letter-spacing:2px;cursor:pointer;
   clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
@@ -61,15 +61,16 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--text)
 .login-err{color:var(--red);font-size:0.82rem;margin-top:0.6rem;text-align:center;display:none}
 
 /* ── MAIN LAYOUT ────────────────────────────────────────────────────────────── */
-#admin-shell{display:none;min-height:100vh;flex-direction:column}
+#admin-shell{display:none;min-height:100vh;flex-direction:column;background:var(--black)}
 
 /* ── TOP NAV ─────────────────────────────────────────────────────────────────── */
 .admin-nav{
   position:sticky;top:0;z-index:200;
   display:flex;align-items:center;justify-content:space-between;
   padding:0.75rem 1.5rem;
-  background:rgba(5,5,5,0.95);backdrop-filter:blur(16px);
+  background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--glass-border);
+  box-shadow:0 1px 8px rgba(0,0,0,0.08);
 }
 .nav-left{display:flex;align-items:center;gap:0.8rem}
 .nav-brand{font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:700;color:var(--gold);letter-spacing:2px}
@@ -119,7 +120,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--text)
 }
 .search-wrap{position:relative;flex:1;min-width:200px;max-width:340px}
 .search-wrap input{
-  width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,215,0,0.12);
+  width:100%;background:#f5f5f5;border:1px solid rgba(212,168,0,0.3);
   color:var(--text);padding:0.55rem 0.9rem 0.55rem 2.2rem;
   font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;
   transition:border-color 0.2s;
@@ -168,11 +169,11 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--text)
   background:var(--dark2);position:sticky;top:60px;z-index:10;
 }
 .reg-table td{
-  padding:0.85rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);
+  padding:0.85rem 1rem;border-bottom:1px solid rgba(0,0,0,0.06);
   font-size:0.88rem;color:var(--text);vertical-align:middle;
   transition:background 0.15s;
 }
-.reg-table tr:hover td{background:rgba(255,215,0,0.03)}
+.reg-table tr:hover td{background:rgba(212,168,0,0.05)}
 .reg-table tr.new-row td{animation:row-in 0.5s ease}
 @keyframes row-in{from{background:rgba(255,215,0,0.12)}to{background:transparent}}
 
@@ -223,7 +224,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--text)
 /* ── DETAIL MODAL ────────────────────────────────────────────────────────────── */
 .modal-overlay{
   position:fixed;inset:0;z-index:500;
-  background:rgba(0,0,0,0.88);
+  background:rgba(0,0,0,0.55);
   display:flex;align-items:center;justify-content:center;
   padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.3s;
 }
